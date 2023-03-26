@@ -1,3 +1,5 @@
+#include <morse.h>
+
 #include <PS2Keyboard.h>
 
 #include <PS2Keyboard.h>
@@ -23,6 +25,11 @@ const int rs = 12, en = 11, d4 = 6, d5 = 5, d6 = 4, d7 = 2;
 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+#define PIN_STATUS  10
+#define PIN_SENSOR  9
+
+LEDMorseSender sender(PIN_STATUS);
+
 const int DataPin = 8;
 const int IRQpin =  3;
 
@@ -33,7 +40,7 @@ void setup() {
 
   // set up the LCD's number of columns and rows:
 
-
+sender.setup();
   lcd.begin(16, 2);
    delay(1000);
   keyboard.begin(DataPin, IRQpin);
@@ -85,6 +92,9 @@ if (keyboard.available()) {
    Serial.print(c);
        lcd.print(c);
        //lcd.print("Keyboard Test:");
+ sender.setMessage(String(c));
+ sender.startSending();
+ sender.continueSending();
     delay(500);
 //lcd.clear();
     }
