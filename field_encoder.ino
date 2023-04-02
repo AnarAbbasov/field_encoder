@@ -13,7 +13,7 @@ PS2Keyboard keyboard;
 //Define pins for morse sender instance
 #define PIN_STATUS  13
 #define PIN_SPEAKER 10
-int analogPin = A3;
+int analogPin = A7;
 int speed = 0;
 //initialise morse sender 
 MorseSender *callsignSender;
@@ -61,8 +61,8 @@ void setup() {
 
 void loop() {
 speed = analogRead(analogPin);  // read the input pin
-Serial.println(speed);          // debug value
- 
+Serial.println(speed/500);          // debug value
+callsignSender->setWPM(speed/500);
 if (keyboard.available()) {
 
 // read the next key
