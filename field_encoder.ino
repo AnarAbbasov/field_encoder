@@ -1,52 +1,60 @@
 #include <morse.h>
-
 #include <PS2Keyboard.h>
-
-#include <PS2Keyboard.h>
-
-
-
-
-// include the library code:
-
 #include <LiquidCrystal.h>
-//#include < PS2Keyboard.h>
-
-
-
 
 // initialize the library by associating any needed LCD interface pin
-
 // with the arduino pin number it is connected to
-
-
 const int rs = 12, en = 11, d4 = 6, d5 = 5, d6 = 4, d7 = 2;
-
-
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-#define PIN_STATUS  10
-#define PIN_SENSOR  9
-
-LEDMorseSender sender(PIN_STATUS);
-
 const int DataPin = 8;
 const int IRQpin =  3;
-
+//Initialise keyboard instance
 PS2Keyboard keyboard;
+//Define pins for morse sender instance
+#define PIN_STATUS  13
+#define PIN_SPEAKER 10
+
+//initialise morse sender 
+MorseSender *callsignSender;
+String StartupMessage="MorseSender V1.0.0",Copyright="Anar(c) 2023";
+ int disp_chars=0;
 
 void setup() {
-
-
   // set up the LCD's number of columns and rows:
-
-sender.setup();
   lcd.begin(16, 2);
+ 
    delay(1000);
   keyboard.begin(DataPin, IRQpin);
   Serial.begin(9600);
   Serial.println("Keyboard Test:");
- lcd.print("Keyboard Test:");
+ 
+  lcd.print(StartupMessage);
+  delay(1000);
+  for(int x: StartupMessage)
+  {
+    lcd.scrollDisplayLeft();
+     delay(500);
+    }
+ // delay(1000); 
+ lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print(Copyright);
+    delay(1000);
+   
+  for(int y: Copyright)
+  {
+    lcd.scrollDisplayLeft();
+     delay(500);
+    }
+//  delay(2000);
+  lcd.clear();
+  lcd.print(">");
+  callsignSender = new SpeakerMorseSender(PIN_SPEAKER,600);
+  callsignSender->setup();
+ // callsignSender->setMessage(String("KG7RNM "));
+ //lcd.autoscroll();
+//lcd.setCursor(0, 0);
+
 }
 
 
@@ -54,13 +62,15 @@ void loop() {
 
 
   
-lcd.autoscroll();
 
 
+ //if(!callsignSender->continueSending())
+ //{
+   // callsignSender->startSending();
+  //}
  
 if (keyboard.available()) {
-   
-     
+
 // read the next key
   char c = keyboard.read();
     
@@ -88,15 +98,31 @@ if (keyboard.available()) {
       Serial.print("[Del]");
     } else {
       
-      // otherwise, just print all normal characters
+   // otherwise, just print and send all normal characters
+  
+   
    Serial.print(c);
-       lcd.print(c);
-       //lcd.print("Keyboard Test:");
- sender.setMessage(String(c));
- sender.startSending();
- sender.continueSending();
-    delay(500);
-//lcd.clear();
+   
+   disp_chars++;
+   lcd.print(c);
+   if (disp_chars==16){
+   lcd.scrollDisplayLeft();
+   disp_chars=0;
+   lcd.clear();
+      
+  //lcd.setCursor(0, 0);
+   //lcd.print("KM>");
+   // lcd.setCursor(3, 0);
+   lcd.print(c);
+  
+     }
+     
+   callsignSender->setMessage(String(c));
+   callsignSender->sendBlocking();
+   
+    
+    
+
     }
   
 
@@ -105,6 +131,5 @@ if (keyboard.available()) {
 
   
 
-
-
+  
 }
