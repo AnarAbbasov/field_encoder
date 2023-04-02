@@ -60,14 +60,6 @@ void setup() {
 
 void loop() {
 
-
-  
-
-
- //if(!callsignSender->continueSending())
- //{
-   // callsignSender->startSending();
-  //}
  
 if (keyboard.available()) {
 
@@ -106,21 +98,17 @@ if (keyboard.available()) {
    disp_chars++;
      Serial.print(disp_chars);
      lcd.print(c);
-     if (disp_chars==16){
-    lcd.scrollDisplayLeft();
-     disp_chars=0;
-     lcd.clear();
-      
-  //lcd.setCursor(0, 0);
-   //lcd.print("KM>");
-   // lcd.setCursor(3, 0);
-   lcd.print(c);
+     if (disp_chars==16)
+      {
+        lcd.scrollDisplayLeft();
+        disp_chars=0;
+        lcd.clear();
+        lcd.print(c);
   
-     }
-     
+      }
    callsignSender->setMessage(String(c));
    callsignSender->sendBlocking();
-   //callsignSender->continueSending();
+   
     
     
 
