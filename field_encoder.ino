@@ -16,23 +16,44 @@ PS2Keyboard keyboard;
 
 //initialise morse sender 
 MorseSender *callsignSender;
+String StartupMessage="MorseSender V1.0.0",Copyright="Anar(c) 2023";
+ int disp_chars=0;
 
 void setup() {
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
+ 
    delay(1000);
   keyboard.begin(DataPin, IRQpin);
   Serial.begin(9600);
   Serial.println("Keyboard Test:");
-  lcd.print("Morse Sender V1.0.0");
+ 
+  lcd.print(StartupMessage);
   delay(1000);
-  lcd.print("Anar(c) 2023.04.02");
-  delay(2000);
+  for(int x: StartupMessage)
+  {
+    lcd.scrollDisplayLeft();
+     delay(500);
+    }
+ // delay(1000); 
+ lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print(Copyright);
+    delay(1000);
+   
+  for(int y: Copyright)
+  {
+    lcd.scrollDisplayLeft();
+     delay(500);
+    }
+//  delay(2000);
   lcd.clear();
   lcd.print(">");
   callsignSender = new SpeakerMorseSender(PIN_SPEAKER,600);
   callsignSender->setup();
-  callsignSender->setMessage(String("KG7RNM "));
+ // callsignSender->setMessage(String("KG7RNM "));
+ //lcd.autoscroll();
+//lcd.setCursor(0, 0);
 
 }
 
@@ -41,12 +62,12 @@ void loop() {
 
 
   
-lcd.autoscroll();
 
- if(!callsignSender->continueSending())
- {
-    callsignSender->startSending();
-  }
+
+ //if(!callsignSender->continueSending())
+ //{
+   // callsignSender->startSending();
+  //}
  
 if (keyboard.available()) {
 
@@ -77,12 +98,30 @@ if (keyboard.available()) {
       Serial.print("[Del]");
     } else {
       
-      // otherwise, just print all normal characters
+   // otherwise, just print and send all normal characters
+  
+   
    Serial.print(c);
+   
+   disp_chars++;
+     Serial.print(disp_chars);
+     lcd.print(c);
+     if (disp_chars==16){
+    lcd.scrollDisplayLeft();
+     disp_chars=0;
+     lcd.clear();
+      
+  //lcd.setCursor(0, 0);
+   //lcd.print("KM>");
+   // lcd.setCursor(3, 0);
    lcd.print(c);
+  
+     }
+     
    callsignSender->setMessage(String(c));
-   callsignSender->startSending();
-       
+   callsignSender->sendBlocking();
+   //callsignSender->continueSending();
+    
     
 
     }
@@ -93,6 +132,5 @@ if (keyboard.available()) {
 
   
 
-
-
+  
 }
