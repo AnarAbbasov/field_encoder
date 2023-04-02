@@ -79,9 +79,9 @@ if (keyboard.available()) {
       
       // otherwise, just print all normal characters
    Serial.print(c);
-       lcd.print(c);
-        callsignSender->setMessage(String(c));
-        callsignSender->startSending();
+   lcd.print(c);
+   callsignSender->setMessage(String(c));
+   callsignSender->startSending();
        
     
 
