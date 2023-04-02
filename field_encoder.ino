@@ -1,3 +1,5 @@
+#include <morse.h>
+
 //#include <PS2Keyboard.h>
 
 #include <PS2Keyboard.h>
@@ -28,6 +30,14 @@ const int IRQpin =  3;
 
 PS2Keyboard keyboard;
 
+#define PIN_STATUS  13
+#define PIN_SPEAKER 10
+
+
+MorseSender *callsignSender;
+
+
+
 void setup() {
 
 
@@ -40,6 +50,11 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Keyboard Test:");
  lcd.print("Keyboard Test:");
+
+ callsignSender = new SpeakerMorseSender(PIN_SPEAKER,600);
+ callsignSender->setup();
+  callsignSender->setMessage(String("73 de kb3jcy "));
+
 }
 
 
@@ -49,11 +64,13 @@ void loop() {
   
 lcd.autoscroll();
 
-
+ if(!callsignSender->continueSending())
+ {
+    callsignSender->startSending();
+  }
  
 if (keyboard.available()) {
-   
-     
+
 // read the next key
   char c = keyboard.read();
     
