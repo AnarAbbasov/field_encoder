@@ -62,9 +62,9 @@ void setup() {
 void loop() {
   
 int SensorValue = analogRead(analogPin); 
-float speed=SensorValue*(5.0/200.0);// read the input pin
-//Serial.println(SensorValue);          // debug value
-callsignSender->setWPM(speed*50);
+float speed=SensorValue*(5.0/20000.0);// read the input pin
+Serial.println(speed);          // debug value
+callsignSender->setWPM(speed*1000);
 if (keyboard.available()) {
 
 // read the next key
